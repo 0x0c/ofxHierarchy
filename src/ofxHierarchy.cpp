@@ -12,9 +12,9 @@
 #include "ofBaseTypes.h"
 
 namespace ofxHierarchy {
-	View::View() : hidden(false), alpha(1), frame({0, 0, 0, 0}), rotation(0, 0, 0), color(ofColor::white), superview(nullptr), will_draw(nullptr), drawable_content(nullptr), did_draw(nullptr) {}
+	View::View() : hidden(false), alpha(1), frame({0, 0, 0, 0}), rotation(0, 0, 0), scale(1, 1, 1), color(ofColor::white), superview(nullptr), will_draw(nullptr), drawable_content(nullptr), did_draw(nullptr) {}
 	
-	View::View(ofxHierarchy::Rect frame, std::function<void(ofxHierarchy::Rect frame)> drawable_content) : hidden(false), alpha(1), color(ofColor::white), superview(nullptr), frame(frame), rotation(0, 0, 0), will_draw(nullptr), drawable_content(drawable_content), did_draw(nullptr) {
+	View::View(ofxHierarchy::Rect frame, std::function<void(ofxHierarchy::Rect *frame)> drawable_content) : hidden(false), alpha(1), color(ofColor::white), superview(nullptr), frame(frame), rotation(0, 0, 0), scale(1, 1, 1), will_draw(nullptr), drawable_content(nullptr), did_draw(nullptr) {
 	}
 	
 	void View::add_subview(ofxHierarchy::View *v) {
@@ -25,17 +25,18 @@ namespace ofxHierarchy {
 	void View::draw() {
 		if (!this->hidden) {
 			if (this->will_draw) {
-				this->will_draw(this->frame);
+				this->will_draw(&this->frame);
 			}
 			
 			ofPushMatrix();
+			ofScale(scale.x, scale.y, scale.z);
 			ofTranslate(this->frame.origin.x, this->frame.origin.y);
 			ofRotateX(this->rotation.x);
 			ofRotateY(this->rotation.y);
 			ofRotateZ(this->rotation.z);
 			ofSetColor(this->color.r, this->color.g, this->color.b, 255.0 * this->alpha);
 			if (this->drawable_content) {
-				this->drawable_content(this->frame);
+				this->drawable_content(&this->frame);
 			}
 			for (auto view : this->subviews) {
 				view->draw();
@@ -43,7 +44,7 @@ namespace ofxHierarchy {
 			ofPopMatrix();
 			
 			if (this->did_draw) {
-				this->did_draw(this->frame);
+				this->did_draw(&this->frame);
 			}
 		}
 	}

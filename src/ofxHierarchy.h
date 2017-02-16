@@ -33,18 +33,19 @@ namespace ofxHierarchy {
 	class View {
 	public:
 		View();
-		View(ofxHierarchy::Rect frame, std::function<void(ofxHierarchy::Rect frame)> drawable_content);
+		View(ofxHierarchy::Rect frame, std::function<void(ofxHierarchy::Rect *frame)> drawable_content);
 		~View() {};
 		bool hidden;
 		float alpha;
 		ofColor color;
+		ofVec3f scale;
 		ofVec3f rotation;
 		ofxHierarchy::Rect frame;
 		View *superview;
 		std::vector<ofxHierarchy::View *> subviews;
-		std::function<void(ofxHierarchy::Rect frame)> will_draw;
-		std::function<void(ofxHierarchy::Rect frame)> drawable_content;
-		std::function<void(ofxHierarchy::Rect frame)> did_draw;
+		std::function<void(ofxHierarchy::Rect *frame)> will_draw;
+		std::function<void(ofxHierarchy::Rect *frame)> drawable_content;
+		std::function<void(ofxHierarchy::Rect *frame)> did_draw;
 		
 		virtual void add_subview(ofxHierarchy::View *v);
 		virtual void draw();
